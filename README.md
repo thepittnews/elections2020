@@ -4,7 +4,10 @@ Collection of scripts to power coverage of the 2020 election from The Pitt News.
 
 ### Concept of operations
 
-Data from PA. SOS --> Ingest via `importsos.js` --> Posted to Google
+- Data from PA. SOS --> Ingest via `importsos.js` --> Posted to Google
+spreadsheet --> Displayed through maps or other data visualizations
+
+- Data from County Elections --> Ingest via `importcounty.js` --> Posted to Google
 spreadsheet --> Displayed through maps or other data visualizations
 
 ### Setup
