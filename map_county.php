@@ -123,7 +123,9 @@
         .attr("stroke", "#000000")
         .attr("stroke-width", "1px")
         .attr("fill", function(d) {
-          if (Number(d.properties["bidenVotes"].replace(',', '')) > Number(d.properties["trumpVotes"].replace(',', ''))) {
+          if (d.properties.NAME.endsWith(' River') || d.properties.NAME === " ") {
+            return '';
+          } else if (Number(d.properties["bidenVotes"].replace(',', '')) > Number(d.properties["trumpVotes"].replace(',', ''))) {
             return democratColor(d.properties["bidenPct"]);
           } else {
             return republicanColor(d.properties["trumpPct"]);
