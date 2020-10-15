@@ -56,7 +56,7 @@
       subdomains: 'abcd',
       maxZoom: 19
     }).addTo(map);
-    map.setView([40.91, -77.8000], 7.8);
+    map.setView([40.97, -77.8000], 7.8);
 
     $.getJSON('/geo_pa.geojson', (geoJSONData) => {
       for(var feature of geoJSONData.features) {
