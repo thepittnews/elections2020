@@ -22,8 +22,10 @@ Create a Google OAuth app, and then `credentials.json` with the following format
 
 ```
 
-### Usage
+### Usage: State
 
-Run `SPREADSHEET_ID=XX node importsos.js` to import the latest results
+- Run `SPREADSHEET_ID=XX node importsos.js` to import the latest results
 from the Pennsylvania Secretary of State website to a Google
 spreadsheet.
+
+- Use `map_pa.php` to display the generated map.
