@@ -64,7 +64,7 @@ const getCountyData = () => {
         const trumpData = $($('tr').toArray().find((r) => $(r).text().includes('TRUMP')));
 
         resolve({
-          name: county.title[0],
+          name: county.title[0].toUpperCase(),
           pctTotal: precinctData[2],
           pctReporting: precinctData[1],
           bidenPct: bidenData.children('td').eq(4).text(),
