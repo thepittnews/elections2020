@@ -22,6 +22,13 @@ Create a Google OAuth app, and then `credentials.json` with the following format
 
 ```
 
+### Usage: County
+
+- Run `SPREADSHEET_ID=XX node importcounty.js` to import the latest results
+from the Allegheny County Division of Elections website to a Google spreadsheet.
+
+- Use `map_county.php` to display the generated map.
+
 ### Usage: State
 
 - Run `SPREADSHEET_ID=XX node importsos.js` to import the latest results
