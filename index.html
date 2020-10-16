@@ -177,7 +177,7 @@
         $el.css({ width: '', 'max-width': '910px' });
       });
 
-      $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/160781', (story) => {
+      $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/155561', (story) => {
         document.getElementById('story-container').innerHTML = story.content.rendered;
         $('div#story-container span').toArray().forEach((s) => $(s).removeAttr('style'));
       });
