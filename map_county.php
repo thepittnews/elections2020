@@ -22,7 +22,7 @@
 
     html, body, #map {
       height: 100%;
-      width: 100vw;
+      width: 100%;
     }
   </style>
 </head>
@@ -56,7 +56,20 @@
       subdomains: 'abcd',
       maxZoom: 19
     }).addTo(map);
-    map.setView([40.4350, -79.9959], 10.3);
+
+    const setView = () => {
+      const width = $(window).width();
+      if (width >= 640) {
+        map.setView([40.4350, -79.9959], 10.3);
+      } else if (width >= 500) {
+        map.setView([40.4350, -80.025], 10);
+      } else {
+        map.setView([40.4350, -80.025], 9.3);
+      }
+    };
+
+    setView();
+    $(window).on('resize', setView);
 
     $.getJSON('/geo_combo.geojson', (geoJSONData) => {
       for(var feature of geoJSONData.features) {

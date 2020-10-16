@@ -56,7 +56,22 @@
       subdomains: 'abcd',
       maxZoom: 19
     }).addTo(map);
-    map.setView([40.97, -77.8000], 7.8);
+
+    const setView = () => {
+      const width = $(window).width();
+      if (width >= 975) {
+        map.setView([40.97, -77.8], 7.8);
+      } else if (width >= 640) {
+        map.setView([40.95, -77.7], 7.2);
+      } else if (width >= 470) {
+        map.setView([40.97, -77.7], 6.8);
+      } else {
+        map.setView([40.97, -77.7], 6.6);
+      }
+    };
+
+    setView();
+    $(window).on('resize', setView);
 
     $.getJSON('/geo_pa.geojson', (geoJSONData) => {
       for(var feature of geoJSONData.features) {
