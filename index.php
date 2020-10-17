@@ -204,7 +204,7 @@
       ?>
 
       const countyData = <?php echo json_encode($countyRows) ?>;
-      createCountyMap(countyData);
+      createResultsMap('county-map', '/geo_combo.geojson', 'NAME', countyData);
 
       <?php
         $stateCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=1596782624&single=true&output=csv';
@@ -218,7 +218,7 @@
       ?>
 
       const stateData = <?php echo json_encode($stateRows) ?>;
-      createStateMap(stateData);
+      createResultsMap('state-map', 'geo_pa.geojson', 'county_nam', stateData);
     });
 
     $(window).scroll(function() {
