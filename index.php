@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.css">
@@ -15,7 +14,6 @@
     </script>
 
     <title>The Pitt News</title>
-    <meta name="viewport" content="width=device-width, initial-scale = 1.0, maximum-scale=1.0, user-scalable=no">
 
     <style>
       body { overflow-x: hidden; }
@@ -129,11 +127,23 @@
         }
       }
 
-      iframe.map-iframe {
+      .map-iframe {
         display: block;
         border-style:none;
       }
     </style>
+
+
+    <!-- Map assets -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""></script>
+    <script src="/map_county.js"></script>
   </head>
 
   <body>
@@ -151,7 +161,7 @@
         <div class="row">
           <div class="col m6 s12" style="text-align: center;">
             <h5>Allegheny County</h5>
-            <iframe class-"map-iframe" width="100%" height="300px" src="/map_county.php"></iframe>
+            <div class="map-iframe" style="width: 100%; height: 300px;" id="county-map"></div>
           </div>
 
           <div class="col m6 s12" style="text-align: center;">
@@ -181,6 +191,20 @@
         document.getElementById('story-container').innerHTML = story.content.rendered;
         $('div#story-container span').toArray().forEach((s) => $(s).removeAttr('style'));
       });
+
+      <?php
+        $csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=449653435&single=true&output=csv';
+        $fileContents = file_get_contents($csvUrl);
+
+        $lines = explode(PHP_EOL, $fileContents);
+        $rows = array();
+        foreach ($lines as $line) {
+          $rows[] = str_getcsv($line);
+        }
+      ?>
+
+      const countyData = <?php echo json_encode($rows) ?>;
+      createCountyMap(countyData);
     });
 
     $(window).scroll(function() {
