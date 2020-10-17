@@ -144,6 +144,7 @@
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
       crossorigin=""></script>
     <script src="/map_county.js"></script>
+    <script src="/map_pa.js"></script>
   </head>
 
   <body>
@@ -166,7 +167,7 @@
 
           <div class="col m6 s12" style="text-align: center;">
             <h5>Pennsylvania</h5>
-            <iframe class-"map-iframe" width="100%" height="300px" src="/map_pa.php"></iframe>
+            <div class="map-iframe" style="width: 100%; height: 300px;" id="state-map"></div>
           </div>
         </div>
 
@@ -193,18 +194,32 @@
       });
 
       <?php
-        $csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=449653435&single=true&output=csv';
-        $fileContents = file_get_contents($csvUrl);
+        $countyCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=449653435&single=true&output=csv';
+        $countyFileContents = file_get_contents($countyCsvUrl);
 
-        $lines = explode(PHP_EOL, $fileContents);
-        $rows = array();
-        foreach ($lines as $line) {
-          $rows[] = str_getcsv($line);
+        $countyLines = explode(PHP_EOL, $countyFileContents);
+        $countyRows = array();
+        foreach ($countyLines as $line) {
+          $countyRows[] = str_getcsv($line);
         }
       ?>
 
-      const countyData = <?php echo json_encode($rows) ?>;
+      const countyData = <?php echo json_encode($countyRows) ?>;
       createCountyMap(countyData);
+
+      <?php
+        $stateCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=1596782624&single=true&output=csv';
+        $stateFileContents = file_get_contents($stateCsvUrl);
+
+        $stateLines = explode(PHP_EOL, $stateFileContents);
+        $stateRows = array();
+        foreach ($stateLines as $line) {
+          $stateRows[] = str_getcsv($line);
+        }
+      ?>
+
+      const stateData = <?php echo json_encode($stateRows) ?>;
+      createStateMap(stateData);
     });
 
     $(window).scroll(function() {
