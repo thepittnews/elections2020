@@ -65,12 +65,12 @@ const getCountyData = () => {
 
         resolve({
           name: county.title[0].toUpperCase(),
-          pctTotal: precinctData[2],
-          pctReporting: precinctData[1],
-          bidenPct: bidenData.children('td').eq(4).text(),
-          bidenVotes: bidenData.children('td').eq(3).text(),
-          trumpPct: trumpData.children('td').eq(4).text(),
-          trumpVotes: trumpData.children('td').eq(3).text(),
+          pctTotal: Number(precinctData[2].replace(',', '')),
+          pctReporting: Number(precinctData[1].replace(',', '')),
+          bidenPct: Number(bidenData.children('td').eq(4).text()),
+          bidenVotes: Number(bidenData.children('td').eq(3).text().replace(',', '')),
+          trumpPct: Number(trumpData.children('td').eq(4).text()),
+          trumpVotes: Number(trumpData.children('td').eq(3).text().replace(',', '')),
         });
       });
     });
@@ -87,7 +87,7 @@ Promise.all([getAuthClient(), getCountyData()])
 
   return sheets.spreadsheets.values.update({
     auth: authClient,
-    range: 'Sheet1!A1:G68',
+    range: 'State!A1:G68',
     resource: {
       values: sheetData,
     },

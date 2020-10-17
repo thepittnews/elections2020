@@ -90,7 +90,7 @@ Promise.all([getAuthClient(), getCountyData()])
 
   return sheets.spreadsheets.values.update({
     auth: authClient,
-    range: 'Sheet2!A1:G132',
+    range: 'County!A1:G132',
     resource: {
       values: sheetData,
     },
