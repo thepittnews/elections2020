@@ -192,33 +192,44 @@
         $('div#story-container span').toArray().forEach((s) => $(s).removeAttr('style'));
       });
 
-      <?php
-        $countyCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=449653435&single=true&output=csv';
-        $countyFileContents = file_get_contents($countyCsvUrl);
 
-        $countyLines = explode(PHP_EOL, $countyFileContents);
-        $countyRows = array();
-        foreach ($countyLines as $line) {
-          $countyRows[] = str_getcsv($line);
+      var mapConfigs = [
+        {
+          code: 'county',
+          geoJSONUrl: 'geo_combo.geojson',
+          geoLayer: null,
+          map: null,
+          reportingUnitIdentifier: 'NAME',
+        },
+        {
+          code: 'state',
+          geoJSONUrl: 'geo_pa.geojson',
+          geoLayer: null,
+          map: null,
+          reportingUnitIdentifier: 'county_nam'
         }
-      ?>
+      ];
 
-      const countyData = <?php echo json_encode($countyRows) ?>;
-      createResultsMap('county-map', '/geo_combo.geojson', 'NAME', countyData);
+      mapConfigs.forEach((mapConfig) => {
+        $.getJSON({ url: `/getdata.php?map=${mapConfig.code}` }, (resultsData) => {
+          createResultsMap(`${mapConfig.code}-map`, mapConfig.reportingUnitIdentifier, (map) => {
+            mapConfig.mapEl = map;
+            drawResultsMap(mapConfig.mapEl, mapConfig.geoJSONUrl, mapConfig.reportingUnitIdentifier, resultsData, (layer) => {
+              mapConfig.geoLayer = layer;
+            });
+          });
+        });
 
-      <?php
-        $stateCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTmwphY6oZEgjhGbyNKyFWI_VqDPBIyvLoYxIasPA7ZbwKup195iTyTm1aw8Gwcb1eLl0oOLkGexKXl/pub?gid=1596782624&single=true&output=csv';
-        $stateFileContents = file_get_contents($stateCsvUrl);
+        setInterval(() => {
+          if (mapConfig.geoLayer) mapConfig.mapEl.removeLayer(mapConfig.geoLayer);
 
-        $stateLines = explode(PHP_EOL, $stateFileContents);
-        $stateRows = array();
-        foreach ($stateLines as $line) {
-          $stateRows[] = str_getcsv($line);
-        }
-      ?>
-
-      const stateData = <?php echo json_encode($stateRows) ?>;
-      createResultsMap('state-map', 'geo_pa.geojson', 'county_nam', stateData);
+          $.getJSON({ url: `/getdata.php?map=${mapConfig.code}` }, (resultsData) => {
+            drawResultsMap(mapConfig.mapEl, mapConfig.geoJSONUrl, mapConfig.reportingUnitIdentifier, resultsData, (layer) => {
+              mapConfig.geoLayer = layer;
+            });
+          });
+        }, 60000);
+      });
     });
 
     $(window).scroll(function() {

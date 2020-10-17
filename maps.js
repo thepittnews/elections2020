@@ -1,4 +1,4 @@
-const createResultsMap = (containerID, geoJSONUrl, reportingUnitIdentifier, resultData) => {
+const createResultsMap = (containerID, reportingUnitIdentifier, mapCb) => {
   const map = L.map(containerID, {
     doubleClickZoom: false,
     scrollWheelZoom: false,
@@ -43,6 +43,10 @@ const createResultsMap = (containerID, geoJSONUrl, reportingUnitIdentifier, resu
   setView();
   $(window).on('resize', setView);
 
+  mapCb(map);
+};
+
+const drawResultsMap = (map, geoJSONUrl, reportingUnitIdentifier, resultData, cb) => {
   $.getJSON(geoJSONUrl, (geoJSONData) => {
     for(var feature of geoJSONData.features) {
       const reportingUnit = feature.properties[reportingUnitIdentifier];
@@ -88,7 +92,7 @@ const createResultsMap = (containerID, geoJSONUrl, reportingUnitIdentifier, resu
       };
     }
 
-    L.geoJSON(geoJSONData, {
+    const geoJSON = L.geoJSON(geoJSONData, {
       onEachFeature: (feature, layer) => {
         layer.on('mouseover', function () {
           const tooltipText = `<div>
@@ -112,5 +116,7 @@ const createResultsMap = (containerID, geoJSONUrl, reportingUnitIdentifier, resu
       },
       style
     }).addTo(map);
+
+    cb(geoJSON);
   });
 };
