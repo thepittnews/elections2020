@@ -3,7 +3,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Merriweather:300,900|Oswald:300,400|Slabo+27px" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:300,900+27px" rel="stylesheet">
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-66952241-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -54,16 +54,6 @@
         margin-left: 10px;
       }
 
-      .author-info, #date-info {
-        font-family: 'Oswald', sans-serif;
-        font-size: 20px;
-      }
-
-      #date-info {
-        font-weight: 300;
-        font-size: 18px;
-      }
-
       /* ** GENERAL CSS ** */
       .container a:hover {
         background-color: aliceblue;
@@ -100,7 +90,7 @@
 
       .map-iframe {
         display: block;
-        border-style:none;
+        border-style: none;
       }
     </style>
 
