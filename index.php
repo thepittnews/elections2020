@@ -158,14 +158,20 @@
     <div class="post-navbar-container">
       <div class="container">
         <h4 id="story-title">Election 2020 Results</h4>
+        <p class="center">Polls close at 8 p.m.; mail-in ballots must be postmarked on or by Nov. 3</p>
+
         <div class="row">
-          <div class="col m6 s12" style="text-align: center;">
+          <div class="col m6 s12 center">
             <h5>Allegheny County</h5>
+            <p id="county-race-summary"></p>
+            <p id="county-precinct-summary"></p>
             <div class="map-iframe" style="width: 100%; height: 300px;" id="county-map"></div>
           </div>
 
-          <div class="col m6 s12" style="text-align: center;">
+          <div class="col m6 s12 center">
             <h5>Pennsylvania</h5>
+            <p id="state-race-summary"></p>
+            <p id="state-precinct-summary"></p>
             <div class="map-iframe" style="width: 100%; height: 300px;" id="state-map"></div>
           </div>
         </div>
@@ -187,7 +193,7 @@
         $el.css({ width: '', 'max-width': '910px' });
       });
 
-      $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/155561', (story) => {
+      $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/161452', (story) => {
         document.getElementById('story-container').innerHTML = story.content.rendered;
         $('div#story-container span').toArray().forEach((s) => $(s).removeAttr('style'));
       });
@@ -210,6 +216,24 @@
         }
       ];
 
+      const updateResultsSummary = (code, resultsData) => {
+        resultsData.shift();
+        resultsData.unshift();
+
+        const bidenPct = 60;
+        const bidenVotes = 60000;
+        const trumpPct = 40;
+        const trumpVotes = 40000;
+
+        $(`p#${code}-race-summary`).html(`Biden leads Trump ${bidenPct}% to ${trumpPct}%,<br>or ${bidenVotes} votes to ${trumpVotes} votes.`);
+
+        const pctTotal = resultsData.map((rd) => Number(rd[1])).reduce((total, x) => total + x, 0);
+        const pctReport = resultsData.map((rd) => Number(rd[2])).reduce((total, x) => total + x, 0);
+        const pctReportPct = (100 * (pctReport / pctTotal)).toFixed(2);
+        $(`p#${code}-precinct-summary`).html(`${pctReport} of ${pctTotal} (${pctReportPct}%) in-person precincts reporting`);
+      };
+
+
       mapConfigs.forEach((mapConfig) => {
         $.getJSON({ url: `/getdata.php?map=${mapConfig.code}` }, (resultsData) => {
           createResultsMap(`${mapConfig.code}-map`, mapConfig.reportingUnitIdentifier, (map) => {
@@ -217,6 +241,7 @@
             drawResultsMap(mapConfig.mapEl, mapConfig.geoJSONUrl, mapConfig.reportingUnitIdentifier, resultsData, (layer) => {
               mapConfig.geoLayer = layer;
             });
+            updateResultsSummary(mapConfig.code, resultsData);
           });
         });
 
@@ -227,6 +252,7 @@
             drawResultsMap(mapConfig.mapEl, mapConfig.geoJSONUrl, mapConfig.reportingUnitIdentifier, resultsData, (layer) => {
               mapConfig.geoLayer = layer;
             });
+            updateResultsSummary(mapConfig.code, resultsData);
           });
         }, 60000);
       });
