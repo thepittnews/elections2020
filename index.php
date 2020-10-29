@@ -148,10 +148,6 @@
 
         <h5>The latest from our news team:</h5>
         <div id="story-container"></div>
-
-        <!--<span class="author-info">-->
-          <!--Written by <a style='color: inherit; text-decoration: underline;' href='https://pittnews.com/staff/?writer=The Pitt News Staff'>The Pitt News Staff</a>-->
-        <!--</span>-->
       </div>
     </div>
   </body>
