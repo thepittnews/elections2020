@@ -166,6 +166,10 @@
       $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/161452', (story) => {
         document.getElementById('story-container').innerHTML = story.content.rendered;
         $('div#story-container span').toArray().forEach((s) => $(s).removeAttr('style'));
+
+        $('div#story-container strong').replaceWith(function() {
+          return $('<b>').append($(this).html());
+        });
       });
 
 
