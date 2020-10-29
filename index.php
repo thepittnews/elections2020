@@ -128,7 +128,7 @@
     <div class="post-navbar-container">
       <div class="container">
         <h4 id="story-title">Election 2020 Results</h4>
-        <p class="center">Polls close at 8 p.m.; mail-in ballots must be postmarked on or by Nov. 3</p>
+        <p class="center">Polls close at 8 p.m.; mail-in ballots must be postmarked by Nov. 3 at 8 p.m. and received by Nov. 6 by 5 p.m.</p>
 
         <div class="row">
           <div class="col m6 s12 center">
