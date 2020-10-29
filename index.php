@@ -12,7 +12,6 @@
 
       gtag('config', 'UA-66952241-1');
     </script>
-
     <title>The Pitt News</title>
 
     <style>
@@ -65,25 +64,6 @@
         font-size: 18px;
       }
 
-      /* ** QUOTES ** */
-      /*.show-quote {
-        right: 0px !important;
-        transition: right 1s ease-out, border-left 2s ease-in;
-        border-left: 5px solid #5ca0c3 !important;
-      }*/
-
-      /*blockquote {
-        font-family: 'Merriweather', serif;
-        font-weight: 900;
-        border-left: 5px solid white;
-
-        float: right;
-        max-width: 250px;
-        font-weight: bold;
-        padding: 13px;
-        margin: 0 13px 13px 10px;
-      }*/
-
       /* ** GENERAL CSS ** */
       .container a:hover {
         background-color: aliceblue;
@@ -94,15 +74,6 @@
         font-family: 'Merriweather', serif;
         font-weight: 300;
       }
-
-      /*p:first-child:first-letter {
-        float: left;
-        font-size: 75px;
-        line-height: 60px;
-        padding-top: 4px;
-        padding-right: 8px;
-        padding-left: 3px;
-      }*/
 
       .wp-caption-text { font-style: italic; }
       img.size-large { height: auto; width: 100% }
@@ -132,7 +103,6 @@
         border-style:none;
       }
     </style>
-
 
     <!-- Map assets -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -234,25 +204,25 @@
       };
 
 
-      mapConfigs.forEach((mapConfig) => {
-        $.getJSON({ url: `/getdata.php?map=${mapConfig.code}` }, (resultsData) => {
-          createResultsMap(`${mapConfig.code}-map`, mapConfig.reportingUnitIdentifier, (map) => {
-            mapConfig.mapEl = map;
-            drawResultsMap(mapConfig.mapEl, mapConfig.geoJSONUrl, mapConfig.reportingUnitIdentifier, resultsData, (layer) => {
-              mapConfig.geoLayer = layer;
+      mapConfigs.forEach((config) => {
+        $.getJSON({ url: `/getdata.php?map=${config.code}` }, (resultsData) => {
+          createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
+            config.mapEl = map;
+            drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
+              config.geoLayer = layer;
             });
-            updateResultsSummary(mapConfig.code, resultsData);
+            updateResultsSummary(config.code, resultsData);
           });
         });
 
         setInterval(() => {
-          if (mapConfig.geoLayer) mapConfig.mapEl.removeLayer(mapConfig.geoLayer);
+          if (config.geoLayer) config.mapEl.removeLayer(config.geoLayer);
 
-          $.getJSON({ url: `/getdata.php?map=${mapConfig.code}` }, (resultsData) => {
-            drawResultsMap(mapConfig.mapEl, mapConfig.geoJSONUrl, mapConfig.reportingUnitIdentifier, resultsData, (layer) => {
-              mapConfig.geoLayer = layer;
+          $.getJSON({ url: `/getdata.php?map=${config.code}` }, (resultsData) => {
+            drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
+              config.geoLayer = layer;
             });
-            updateResultsSummary(mapConfig.code, resultsData);
+            updateResultsSummary(config.code, resultsData);
           });
         }, 60000);
       });
