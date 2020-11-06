@@ -47,10 +47,6 @@ const createResultsMap = (containerID, reportingUnitIdentifier, mapCb) => {
 };
 
 const drawResultsMap = (map, geoJSONUrl, reportingUnitIdentifier, resultData, cb) => {
-  function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
   $.getJSON(geoJSONUrl, (geoJSONData) => {
     for(var feature of geoJSONData.features) {
       const reportingUnit = feature.properties[reportingUnitIdentifier];
@@ -123,4 +119,74 @@ const drawResultsMap = (map, geoJSONUrl, reportingUnitIdentifier, resultData, cb
 
     cb(geoJSON);
   });
+};
+
+const initializeMapConfig = () => {
+  mapConfigs.forEach((config) => {
+    const drawAndUpdateMap = (resultsData) => {
+      drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
+        config.geoLayer = layer;
+      });
+      updateResultsSummary(config.code, resultsData);
+    };
+
+    const fetchAndUpdateMap = (createMap) => {
+      if (config.geoLayer) config.mapEl.removeLayer(config.geoLayer);
+
+      $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
+        if (createMap) {
+          createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
+            config.mapEl = map;
+            drawAndUpdateMap(resultsData);
+          });
+        } else {
+          drawAndUpdateMap(resultsData);
+        }
+      });
+    };
+
+    fetchAndUpdateMap(true);
+    setInterval(() => fetchAndUpdateMap(false), 60000);
+  });
+};
+
+const mapConfigs = [
+  {
+    code: 'county',
+    geoJSONUrl: '/geo_combo.geojson',
+    geoLayer: null,
+    map: null,
+    reportingUnitIdentifier: 'NAME',
+  },
+  {
+    code: 'state',
+    geoJSONUrl: '/geo_pa.geojson',
+    geoLayer: null,
+    map: null,
+    reportingUnitIdentifier: 'county_nam'
+  }
+];
+
+const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+const updateResultsSummary = (code, resultsData) => {
+  resultsData.shift();
+  resultsData.unshift();
+
+  const statewideData = resultsData[resultsData.length - 1];
+  const bidenPct = Number(statewideData[3]);
+  const bidenVotes = statewideData[4];
+  const trumpPct = Number(statewideData[5]);
+  const trumpVotes = statewideData[6];
+
+  if (bidenPct > trumpPct) {
+    $(`p#${code}-race-summary`).html(`Biden leads Trump ${bidenPct}% to ${trumpPct}%,<br>or ${numberWithCommas(bidenVotes)} votes to ${numberWithCommas(trumpVotes)} votes.`);
+  } else {
+    $(`p#${code}-race-summary`).html(`Trump leads Biden ${trumpPct}% to ${bidenPct}%,<br>or ${numberWithCommas(trumpVotes)} votes to ${numberWithCommas(bidenVotes)} votes.`);
+  }
+
+  const pctTotal = resultsData.map((rd) => Number(rd[1])).reduce((total, x) => total + x, 0);
+  const pctReport = resultsData.map((rd) => Number(rd[2])).reduce((total, x) => total + x, 0);
+  const pctReportPct = (100 * (pctReport / pctTotal)).toFixed(2);
+  //$(`p#${code}-precinct-summary`).html(`${pctReport} of ${pctTotal} (${pctReportPct}%) in-person precincts reporting`);
 };

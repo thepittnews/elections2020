@@ -112,7 +112,7 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
       crossorigin=""></script>
-    <script src="/wp-content/plugins/tpn-extras-plugin/election2020-maps.js?ver=1.2"></script>
+    <script src="/wp-content/plugins/tpn-extras-plugin/election2020-maps.js?ver=1.3"></script>
   </head>
 
   <body>
@@ -154,10 +154,6 @@
   </body>
 
   <script type="text/javascript">
-    function numberWithCommas(x) {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
     $(document).ready(function() {
       $('div[id*="attachment_"]').each((idx, el) => {
         const $el = $(el);
@@ -173,72 +169,7 @@
         });
       });
 
-      var mapConfigs = [
-        {
-          code: 'county',
-          geoJSONUrl: '/geo_combo.geojson',
-          geoLayer: null,
-          map: null,
-          reportingUnitIdentifier: 'NAME',
-        },
-        {
-          code: 'state',
-          geoJSONUrl: '/geo_pa.geojson',
-          geoLayer: null,
-          map: null,
-          reportingUnitIdentifier: 'county_nam'
-        }
-      ];
-
-      const updateResultsSummary = (code, resultsData) => {
-        resultsData.shift();
-        resultsData.unshift();
-
-        const statewideData = resultsData[resultsData.length - 1];
-        const bidenPct = Number(statewideData[3]);
-        const bidenVotes = statewideData[4];
-        const trumpPct = Number(statewideData[5]);
-        const trumpVotes = statewideData[6];
-
-        if (bidenPct > trumpPct) {
-          $(`p#${code}-race-summary`).html(`Biden leads Trump ${bidenPct}% to ${trumpPct}%,<br>or ${numberWithCommas(bidenVotes)} votes to ${numberWithCommas(trumpVotes)} votes.`);
-        } else {
-          $(`p#${code}-race-summary`).html(`Trump leads Biden ${trumpPct}% to ${bidenPct}%,<br>or ${numberWithCommas(trumpVotes)} votes to ${numberWithCommas(bidenVotes)} votes.`);
-        }
-
-        const pctTotal = resultsData.map((rd) => Number(rd[1])).reduce((total, x) => total + x, 0);
-        const pctReport = resultsData.map((rd) => Number(rd[2])).reduce((total, x) => total + x, 0);
-        const pctReportPct = (100 * (pctReport / pctTotal)).toFixed(2);
-        //$(`p#${code}-precinct-summary`).html(`${pctReport} of ${pctTotal} (${pctReportPct}%) in-person precincts reporting`);
-      };
-
-
-      mapConfigs.forEach((config) => {
-        const drawAndUpdateMap = (resultsData) => {
-          drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
-            config.geoLayer = layer;
-          });
-          updateResultsSummary(config.code, resultsData);
-        };
-
-        const fetchAndUpdateMap = (createMap) => {
-          if (config.geoLayer) config.mapEl.removeLayer(config.geoLayer);
-
-          $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
-            if (createMap) {
-              createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
-                config.mapEl = map;
-                drawAndUpdateMap(resultsData);
-              });
-            } else {
-              drawAndUpdateMap(resultsData);
-            }
-          });
-        };
-
-        fetchAndUpdateMap(true);
-        setInterval(() => fetchAndUpdateMap(false), 60000);
-      });
+      initializeMapConfig();
     });
 
     $(window).scroll(function() {
