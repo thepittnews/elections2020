@@ -101,16 +101,7 @@
       }
     </style>
 
-    <!-- Map assets -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-      crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-      crossorigin=""></script>
-    <script src="/wp-content/plugins/tpn-extras-plugin/election2020-maps.js?ver=1.0"></script>
   </head>
 
   <body>
@@ -126,22 +117,6 @@
       <div class="container">
         <h4 id="story-title">Election 2020 Results</h4>
         <p class="center">Mail-in ballots must be postmarked by Nov. 3 at 8 p.m. and received by Nov. 6 by 5 p.m.</p>
-
-        <!--<div class="row">
-          <div class="col m6 s12 center">
-            <h5>Allegheny County</h5>
-            <p id="county-race-summary"></p>
-            <p id="county-precinct-summary"></p>
-            <div class="map-iframe" style="width: 100%; height: 300px;" id="county-map"></div>
-          </div>
-
-          <div class="col m6 s12 center">
-            <h5>Pennsylvania</h5>
-            <p id="state-race-summary"></p>
-            <p id="state-precinct-summary"></p>
-            <div class="map-iframe" style="width: 100%; height: 300px;" id="state-map"></div>
-          </div>
-        </div>-->
 
         <h5>The latest from our news team:</h5>
         <div id="story-container"></div>
@@ -163,65 +138,6 @@
         $('div#story-container strong').replaceWith(function() {
           return $('<b>').append($(this).html());
         });
-      });
-
-
-      var mapConfigs = [
-        {
-          code: 'county',
-          geoJSONUrl: '/geo_combo.geojson',
-          geoLayer: null,
-          map: null,
-          reportingUnitIdentifier: 'NAME',
-        },
-        {
-          code: 'state',
-          geoJSONUrl: '/geo_pa.geojson',
-          geoLayer: null,
-          map: null,
-          reportingUnitIdentifier: 'county_nam'
-        }
-      ];
-
-      const updateResultsSummary = (code, resultsData) => {
-        resultsData.shift();
-        resultsData.unshift();
-
-        const bidenPct = 60;
-        const bidenVotes = 60000;
-        const trumpPct = 40;
-        const trumpVotes = 40000;
-
-        $(`p#${code}-race-summary`).html(`Biden leads Trump ${bidenPct}% to ${trumpPct}%,<br>or ${bidenVotes} votes to ${trumpVotes} votes.`);
-
-        const pctTotal = resultsData.map((rd) => Number(rd[1])).reduce((total, x) => total + x, 0);
-        const pctReport = resultsData.map((rd) => Number(rd[2])).reduce((total, x) => total + x, 0);
-        const pctReportPct = (100 * (pctReport / pctTotal)).toFixed(2);
-        $(`p#${code}-precinct-summary`).html(`${pctReport} of ${pctTotal} (${pctReportPct}%) in-person precincts reporting`);
-      };
-
-
-      mapConfigs.forEach((config) => {
-        $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
-          createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
-            config.mapEl = map;
-            drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
-              config.geoLayer = layer;
-            });
-            updateResultsSummary(config.code, resultsData);
-          });
-        });
-
-        setInterval(() => {
-          if (config.geoLayer) config.mapEl.removeLayer(config.geoLayer);
-
-          $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
-            drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
-              config.geoLayer = layer;
-            });
-            updateResultsSummary(config.code, resultsData);
-          });
-        }, 60000);
       });
     });
 
