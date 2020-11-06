@@ -47,6 +47,10 @@ const createResultsMap = (containerID, reportingUnitIdentifier, mapCb) => {
 };
 
 const drawResultsMap = (map, geoJSONUrl, reportingUnitIdentifier, resultData, cb) => {
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   $.getJSON(geoJSONUrl, (geoJSONData) => {
     for(var feature of geoJSONData.features) {
       const reportingUnit = feature.properties[reportingUnitIdentifier];
@@ -97,10 +101,10 @@ const drawResultsMap = (map, geoJSONUrl, reportingUnitIdentifier, resultData, cb
         layer.on('mouseover', function () {
           const tooltipText = `<div>
             <h6>${feature.properties[reportingUnitIdentifier]} ${reportingUnitIdentifier === 'county_nam' ? 'COUNTY' : ''}</h6>
-            <p>Biden Votes: ${feature.properties.bidenVotes}, Pct: ${feature.properties.bidenPct}</p>
-            <p>Trump Votes: ${feature.properties.trumpVotes}, Pct: ${feature.properties.trumpPct}</p>
-            <p>${feature.properties.pctReporting} of ${feature.properties.pctTotal} in-person precincts reporting</p>
+            <p>Biden Votes: ${numberWithCommas(feature.properties.bidenVotes)}, Pct: ${feature.properties.bidenPct}</p>
+            <p>Trump Votes: ${numberWithCommas(feature.properties.trumpVotes)}, Pct: ${feature.properties.trumpPct}</p>
           </div>`;
+          //<p>${feature.properties.pctReporting} of ${feature.properties.pctTotal} in-person precincts reporting</p>
           layer.bindTooltip(tooltipText).openTooltip();
 
           this.setStyle({ color: '#ffb81c' });

@@ -1,3 +1,10 @@
+<?php
+/**
+* Template Name: Election 2020 results no map
+*
+ */
+?>
+
 <html>
   <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.css">
@@ -103,7 +110,7 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
       crossorigin=""></script>
-    <script src="/maps.js"></script>
+    <script src="/wp-content/plugins/tpn-extras-plugin/election2020-maps.js?ver=1.0"></script>
   </head>
 
   <body>
@@ -118,9 +125,9 @@
     <div class="post-navbar-container">
       <div class="container">
         <h4 id="story-title">Election 2020 Results</h4>
-        <p class="center">Polls close at 8 p.m.; mail-in ballots must be postmarked by Nov. 3 at 8 p.m. and received by Nov. 6 by 5 p.m.</p>
+        <p class="center">Mail-in ballots must be postmarked by Nov. 3 at 8 p.m. and received by Nov. 6 by 5 p.m.</p>
 
-        <div class="row">
+        <!--<div class="row">
           <div class="col m6 s12 center">
             <h5>Allegheny County</h5>
             <p id="county-race-summary"></p>
@@ -134,7 +141,7 @@
             <p id="state-precinct-summary"></p>
             <div class="map-iframe" style="width: 100%; height: 300px;" id="state-map"></div>
           </div>
-        </div>
+        </div>-->
 
         <h5>The latest from our news team:</h5>
         <div id="story-container"></div>
@@ -149,7 +156,7 @@
         $el.css({ width: '', 'max-width': '910px' });
       });
 
-      $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/161452', (story) => {
+      $.getJSON('https://pittnews.com/wp-json/wp/v2/posts/161452?', (story) => {
         document.getElementById('story-container').innerHTML = story.content.rendered;
         $('div#story-container span').toArray().forEach((s) => $(s).removeAttr('style'));
 
@@ -162,14 +169,14 @@
       var mapConfigs = [
         {
           code: 'county',
-          geoJSONUrl: 'geo_combo.geojson',
+          geoJSONUrl: '/geo_combo.geojson',
           geoLayer: null,
           map: null,
           reportingUnitIdentifier: 'NAME',
         },
         {
           code: 'state',
-          geoJSONUrl: 'geo_pa.geojson',
+          geoJSONUrl: '/geo_pa.geojson',
           geoLayer: null,
           map: null,
           reportingUnitIdentifier: 'county_nam'
@@ -195,7 +202,7 @@
 
 
       mapConfigs.forEach((config) => {
-        $.getJSON({ url: `/getdata.php?map=${config.code}` }, (resultsData) => {
+        $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
           createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
             config.mapEl = map;
             drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
@@ -208,7 +215,7 @@
         setInterval(() => {
           if (config.geoLayer) config.mapEl.removeLayer(config.geoLayer);
 
-          $.getJSON({ url: `/getdata.php?map=${config.code}` }, (resultsData) => {
+          $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
             drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
               config.geoLayer = layer;
             });

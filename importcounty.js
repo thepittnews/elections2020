@@ -50,7 +50,7 @@ const getAuthClient = () => {
 
 const getCountyData = () => {
   return request({
-    url: 'https://results.enr.clarityelections.com//PA/Allegheny/103291/254824/json/ALL_district.json',
+    url: 'https://results.enr.clarityelections.com//PA/Allegheny/106267/269519/json/ALL_district.json',
     json: true
   })
   .then((countyData) => {
@@ -63,9 +63,22 @@ const getCountyData = () => {
     };
 
     return countyData.Districts.map((municipality) => {
-      const bidenVotes = municipality.Contests.map((c) => c.V[0] ? c.V[0][1] : 0).reduce(add);
-      const trumpVotes = municipality.Contests.map((c) => c.V[0] ? c.V[0][0] : 0).reduce(add);
-      const totalVotes = municipality.Contests.map((c) => c.V[0]).flat().reduce(add);
+      const municipalityResults = municipality.Contests.find((c) => c.A === "-1").V;
+      let bidenVotes = 0;
+      let trumpVotes = 0;
+      let totalVotes = 0;
+
+      if (municipalityResults[0]) {
+        bidenVotes = municipalityResults[0][0];
+        trumpVotes = municipalityResults[0][1];
+        totalVotes = municipalityResults[0].reduce(add);
+      }
+
+      if (municipality.Name === 'ALEPPO') {
+        bidenVotes = 517;
+        trumpVotes - 499;
+        totalVotes = 1029;
+      }
 
       return Promise.resolve({
         name: nameMap[municipality.Name] || municipality.Name,

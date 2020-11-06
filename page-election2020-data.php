@@ -1,4 +1,9 @@
 <?php
+/**
+* Template Name: Election 2020 data
+*
+ */
+
 header("Content-Type: application/json");
 header("Pragma: no-cache");
 header("Expires: 0");

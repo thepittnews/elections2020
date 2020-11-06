@@ -50,7 +50,7 @@ const getAuthClient = () => {
 
 const getCountyData = () => {
   return request({
-    url: 'https://electionreturns.pa.gov/electionFeed.aspx?ID=23&FeedName=2020+Primary+Election+by+County',
+    url: 'https://electionreturns.pa.gov/electionFeed.aspx?ID=29&FeedName=2020+General+Election+by+County',
     encoding: null
   })
   .then(parseXML)
@@ -67,10 +67,10 @@ const getCountyData = () => {
           name: county.title[0].toUpperCase(),
           pctTotal: Number(precinctData[2].replace(',', '')),
           pctReporting: Number(precinctData[1].replace(',', '')),
-          bidenPct: Number(bidenData.children('td').eq(4).text()),
-          bidenVotes: Number(bidenData.children('td').eq(3).text().replace(',', '')),
-          trumpPct: Number(trumpData.children('td').eq(4).text()),
-          trumpVotes: Number(trumpData.children('td').eq(3).text().replace(',', '')),
+          bidenPct: Number(bidenData.children('td').eq(7).text()),
+          bidenVotes: Number(bidenData.children('td').eq(6).text().replace(',', '')),
+          trumpPct: Number(trumpData.children('td').eq(7).text()),
+          trumpVotes: Number(trumpData.children('td').eq(6).text().replace(',', '')),
         });
       });
     });
@@ -78,16 +78,39 @@ const getCountyData = () => {
   .then((p) => Promise.all(p));
 };
 
-Promise.all([getAuthClient(), getCountyData()])
-.then(([ authClient, countyData ]) => {
+const getToplineData = () => {
+  return request({
+    url: 'https://electionreturns.pa.gov/api/ElectionReturn/GET?methodName=GetSummaryData&electionid=83&electiontype=G&isactive=1',
+  })
+  .then((r) => {
+    const statewide = JSON.parse(JSON.parse(r)).Election['President of the United States'][0].Statewide;
+
+    return Promise.resolve([
+      'ALL',
+      '',
+      '',
+      statewide[0].Percentage,
+      statewide[0].Votes,
+      statewide[1].Percentage,
+      statewide[1].Votes
+    ]);
+  });
+};
+
+Promise.all([getAuthClient(), getCountyData(), getToplineData()])
+.then(([ authClient, countyData, toplineData ]) => {
+  const add = (total, x) => total + x;
+  let average = (array) => array.reduce((a, b) => a + b) / array.length;
+
   const sheetData = [
     ["name", "pctTotal", "pctReporting", "bidenPct", "bidenVotes", "trumpPct", "trumpVotes"],
-    ...countyData.map(Object.values)
+    ...countyData.map(Object.values),
+    toplineData
   ];
 
   return sheets.spreadsheets.values.update({
     auth: authClient,
-    range: 'State!A1:G68',
+    range: 'State!A1:G69',
     resource: {
       values: sheetData,
     },
