@@ -95,9 +95,11 @@
         }
       }
 
-      .map-iframe {
+      .map-frame {
         display: block;
         border-style: none;
+        width: 100%;
+        height: 300px;
       }
     </style>
 
@@ -132,14 +134,14 @@
             <h5>Allegheny County</h5>
             <p id="county-race-summary"></p>
             <p id="county-precinct-summary"></p>
-            <div class="map-iframe" style="width: 100%; height: 300px;" id="county-map"></div>
+            <div class="map-frame" id="county-map"></div>
           </div>
 
           <div class="col m6 s12 center">
             <h5>Pennsylvania</h5>
             <p id="state-race-summary"></p>
             <p id="state-precinct-summary"></p>
-            <div class="map-iframe" style="width: 100%; height: 300px;" id="state-map"></div>
+            <div class="map-frame" id="state-map"></div>
           </div>
 
           <p>Graphs by Jon Moss, Editor-in-Chief</p>
@@ -212,32 +214,35 @@
 
 
       mapConfigs.forEach((config) => {
-        $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
-          createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
-            config.mapEl = map;
-            drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
-              config.geoLayer = layer;
-            });
-            updateResultsSummary(config.code, resultsData);
+        const drawAndUpdateMap = (resultsData) => {
+          drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
+            config.geoLayer = layer;
           });
-        });
+          updateResultsSummary(config.code, resultsData);
+        };
 
-        setInterval(() => {
+        const fetchAndUpdateMap = (createMap) => {
           if (config.geoLayer) config.mapEl.removeLayer(config.geoLayer);
 
           $.getJSON({ url: `/election-2020-staging-data?map=${config.code}` }, (resultsData) => {
-            drawResultsMap(config.mapEl, config.geoJSONUrl, config.reportingUnitIdentifier, resultsData, (layer) => {
-              config.geoLayer = layer;
-            });
-            updateResultsSummary(config.code, resultsData);
+            if (createMap) {
+              createResultsMap(`${config.code}-map`, config.reportingUnitIdentifier, (map) => {
+                config.mapEl = map;
+                drawAndUpdateMap(resultsData);
+              });
+            } else {
+              drawAndUpdateMap(resultsData);
+            }
           });
-        }, 60000);
+        };
+
+        fetchAndUpdateMap(true);
+        setInterval(() => fetchAndUpdateMap(false), 60000);
       });
     });
 
     $(window).scroll(function() {
-      const scrollTop = $(window).scrollTop();
-      if (scrollTop > 300) {
+      if ($(window).scrollTop() > 300) {
         $("#header-title").addClass('show-title');
       } else {
         $('#header-title').removeClass('show-title');
