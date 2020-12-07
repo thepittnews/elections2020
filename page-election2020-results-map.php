@@ -144,7 +144,7 @@
             <div class="map-frame" id="state-map"></div>
           </div>
 
-          <p>Graphs by Jon Moss, Editor-in-Chief</p>
+          <p style="text-align: right"><b>Graphics and design by Jon Moss, Editor-in-Chief</b></p>
         </div>
 
         <h5>The latest from our news team:</h5>
@@ -173,11 +173,8 @@
     });
 
     $(window).scroll(function() {
-      if ($(window).scrollTop() > 300) {
-        $("#header-title").addClass('show-title');
-      } else {
-        $('#header-title').removeClass('show-title');
-      }
+      const fn = $(window).scrollTop() > 300 ? 'addClass' : 'removeClass';
+      $("#header-title")[fn]('show-title');
     });
   </script>
 </html>
