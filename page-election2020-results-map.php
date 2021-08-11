@@ -73,7 +73,8 @@
       }
 
       .wp-caption-text { font-style: italic; }
-      img.size-large { height: auto; width: 100% }
+      img.size-medium { height: auto; width: 100% }
+      figure.wp-caption { width: inherit !important; }
 
       /* ** MEDIA ** */
       @media(max-width: 993px) {
